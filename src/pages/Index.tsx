@@ -130,7 +130,7 @@ const Index = () => {
           
           {/* Add Mamak Button */}
           <button 
-            onClick={() => setShowAuth(true)}
+            onClick={() => user ? setShowAdmin(true) : setShowAuth(true)}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-sm text-sm font-medium whitespace-nowrap"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

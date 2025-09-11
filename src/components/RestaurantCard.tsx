@@ -46,7 +46,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const priceStatus = getPriceStatus(restaurant.tehAisPrice);
 
   return (
-    <Card className="w-80 max-w-sm bg-gradient-card shadow-card border-0 max-h-[90vh] overflow-y-auto">
+    <Card className="w-80 max-w-sm bg-gradient-card shadow-card border-0 max-h-[85vh] overflow-y-auto flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-bold text-card-foreground pr-2">
@@ -84,7 +84,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="flex-1 flex flex-col space-y-4 overflow-y-auto">
         {/* Current Price Display */}
         <div className="p-3 bg-muted rounded-lg space-y-2">
           <div className="flex items-center justify-between">
@@ -147,7 +147,28 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           )}
         </div>
 
-        {/* Update Price Section */}
+        {/* Restaurant Info */}
+        <div className="space-y-2">
+          <div className="text-sm">
+            <span className="font-medium">Hours: </span>
+            <span className="text-muted-foreground">{restaurant.openHours}</span>
+          </div>
+          
+          <div>
+            <span className="font-medium text-sm">Specialties:</span>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {restaurant.specialties.map((specialty, index) => (
+                <Badge key={index} variant="outline" className="text-xs max-w-[120px] truncate">
+                  {specialty}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+
+      {/* Fixed Update Price Section at Bottom */}
+      <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
         <div className="space-y-3">
           <h4 className="font-medium">Update Teh Ais Price</h4>
           
@@ -189,34 +210,14 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               <Button 
                 onClick={handlePriceUpdate}
                 disabled={!priceInput || isUpdating}
-                className="bg-gradient-mamak hover:opacity-90 transition-opacity"
+                className="bg-gradient-mamak hover:opacity-90 transition-opacity min-w-[80px]"
               >
                 {isUpdating ? 'Updating...' : 'Update'}
               </Button>
             </div>
           )}
         </div>
-
-        {/* Restaurant Info */}
-        <div className="space-y-2">
-          <div className="text-sm">
-            <span className="font-medium">Hours: </span>
-            <span className="text-muted-foreground">{restaurant.openHours}</span>
-          </div>
-          
-          <div>
-            <span className="font-medium text-sm">Specialties:</span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {restaurant.specialties.map((specialty, index) => (
-                <Badge key={index} variant="outline" className="text-xs max-w-[120px] truncate">
-                  {specialty}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </CardContent>
+      </div>
     </Card>
   );
 };

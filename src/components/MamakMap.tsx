@@ -348,10 +348,10 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
           className="absolute inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
           onClick={() => setSelectedRestaurant(null)}
         >
-          <div 
-            className="relative max-w-sm w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div 
+          className="relative max-w-sm w-full mx-4"
+          onClick={(e) => e.stopPropagation()}
+        >
             {/* Close button for the modal overlay */}
             <button
               onClick={() => setSelectedRestaurant(null)}
