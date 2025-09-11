@@ -4,17 +4,24 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { AuthModal } from "@/components/AuthModal";
 import { UserProfile } from "@/components/UserProfile";
 import { AddMamakModal } from "@/components/AddMamakModal";
+import { UpdatePriceModal } from "@/components/UpdatePriceModal";
+import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { Button } from "@/components/ui/button";
 import { Settings, User, LogOut, X, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getContributorInfo } from "@/lib/contributorUtils";
 import { useRestaurantsWithFallback } from "@/hooks/useRestaurantsWithFallback";
+import { MamakRestaurant } from "@/types/restaurant";
+import { RestaurantFromGoogle } from "@/types/restaurant";
 
 const Index = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [showAddMamak, setShowAddMamak] = useState(false);
+  const [showUpdatePrice, setShowUpdatePrice] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState<MamakRestaurant | null>(null);
+  const [selectedGoogleRestaurant, setSelectedGoogleRestaurant] = useState<RestaurantFromGoogle | null>(null);
   const [showPrices, setShowPrices] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showWelcomeLoggedIn, setShowWelcomeLoggedIn] = useState(true);
@@ -57,43 +64,26 @@ const Index = () => {
       
       {/* Google Maps Style Top Bar */}
       <div className="top-bar absolute top-0 left-0 right-0 z-50">
-        {/* Search Bar */}
-        <div className="bg-white mx-4 mt-4 rounded-lg shadow-lg">
-          <div className="flex items-center px-4 py-3">
-            {/* Google Maps Logo */}
-            <div className="flex items-center mr-3">
-              <div className="w-6 h-6 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full flex items-center justify-center">
-                <div className="w-3 h-3 bg-white rounded-full"></div>
-              </div>
-            </div>
-            
-            {/* Search Input */}
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search mamak restaurants..."
-                className="w-full text-gray-700 placeholder-gray-500 outline-none text-sm"
-                readOnly
-              />
-            </div>
-            
-            {/* Voice Search */}
-            <button className="p-2 text-gray-500 hover:text-gray-700">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-              </svg>
-            </button>
-            
-            {/* Camera/Lens */}
-            <button className="p-2 text-gray-500 hover:text-gray-700 ml-1">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </button>
-            
-            {/* Profile Button */}
-            <div className="ml-3">
+        {/* Smart Search Bar */}
+        <div className="mx-4 mt-4">
+          <SmartSearchBar
+            onRestaurantSelect={(restaurant) => {
+              setSelectedRestaurant(restaurant);
+              setShowUpdatePrice(true);
+            }}
+            onAddNewRestaurant={(restaurant) => {
+              setSelectedGoogleRestaurant(restaurant);
+              setShowAddMamak(true);
+            }}
+            onUpdatePrice={(restaurant) => {
+              setSelectedRestaurant(restaurant);
+              setShowUpdatePrice(true);
+            }}
+          />
+        </div>
+        
+        {/* Profile Button */}
+        <div className="absolute top-4 right-4 z-50">
               {user ? (
                 <button
                   onClick={() => setShowUserProfile(true)}
@@ -329,7 +319,11 @@ const Index = () => {
       {/* Add Mamak Modal */}
       <AddMamakModal
         isOpen={showAddMamak}
-        onClose={() => setShowAddMamak(false)}
+        onClose={() => {
+          setShowAddMamak(false);
+          setSelectedGoogleRestaurant(null);
+        }}
+        preselectedRestaurant={selectedGoogleRestaurant}
         onRestaurantAdded={async (restaurant) => {
           console.log('New restaurant added:', restaurant);
           // Refresh the map data to show the new restaurant
@@ -339,6 +333,21 @@ const Index = () => {
           } catch (error) {
             console.error('❌ Failed to refresh map data:', error);
           }
+        }}
+      />
+      
+      {/* Update Price Modal */}
+      <UpdatePriceModal
+        isOpen={showUpdatePrice}
+        onClose={() => {
+          setShowUpdatePrice(false);
+          setSelectedRestaurant(null);
+        }}
+        restaurant={selectedRestaurant}
+        onPriceUpdated={(restaurant) => {
+          console.log('Price updated for:', restaurant.name);
+          // Refresh the map data
+          fetchRestaurants();
         }}
       />
     </div>

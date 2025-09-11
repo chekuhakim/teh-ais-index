@@ -14,12 +14,14 @@ interface AddMamakModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRestaurantAdded?: (restaurant: any) => void;
+  preselectedRestaurant?: RestaurantFromGoogle | null;
 }
 
 export const AddMamakModal: React.FC<AddMamakModalProps> = ({
   isOpen,
   onClose,
-  onRestaurantAdded
+  onRestaurantAdded,
+  preselectedRestaurant
 }) => {
   const [restaurantName, setRestaurantName] = useState('');
   const [address, setAddress] = useState('');
@@ -29,6 +31,21 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantFromGoogle | null>(null);
   const [showGoogleSearch, setShowGoogleSearch] = useState(true);
   const { user } = useAuth();
+
+  // Handle preselected restaurant
+  React.useEffect(() => {
+    if (preselectedRestaurant) {
+      setSelectedRestaurant(preselectedRestaurant);
+      setRestaurantName(preselectedRestaurant.name);
+      setAddress(preselectedRestaurant.address);
+      setShowGoogleSearch(false);
+    } else {
+      setSelectedRestaurant(null);
+      setRestaurantName('');
+      setAddress('');
+      setShowGoogleSearch(true);
+    }
+  }, [preselectedRestaurant]);
 
   const handleRestaurantSelect = (restaurant: RestaurantFromGoogle) => {
     setSelectedRestaurant(restaurant);
