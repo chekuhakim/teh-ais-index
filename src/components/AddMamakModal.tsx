@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, MapPin, Coffee, CheckCircle } from 'lucide-react';
+import { X, MapPin, Coffee, CheckCircle, Search } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { GooglePlacesSearch } from './GooglePlacesSearch';
+import { RestaurantFromGoogle } from '@/types/restaurant';
 
 interface AddMamakModalProps {
   isOpen: boolean;
@@ -23,7 +25,16 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
   const [tehAisPrice, setTehAisPrice] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantFromGoogle | null>(null);
+  const [showGoogleSearch, setShowGoogleSearch] = useState(true);
   const { user } = useAuth();
+
+  const handleRestaurantSelect = (restaurant: RestaurantFromGoogle) => {
+    setSelectedRestaurant(restaurant);
+    setRestaurantName(restaurant.name);
+    setAddress(restaurant.address);
+    setShowGoogleSearch(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,12 +54,12 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
         name: restaurantName.trim(),
         address: address.trim(),
         tehAisPrice: parseFloat(tehAisPrice),
-        coordinates: { lat: 0, lng: 0 }, // Will be set by location picker
-        rating: 0,
-        reviewCount: 0,
-        isOpen: true,
-        openHours: '24 Hours',
-        specialties: ['Teh Ais', 'Nasi Kandar'],
+        coordinates: selectedRestaurant?.coordinates || { lat: 0, lng: 0 },
+        rating: selectedRestaurant?.rating || 0,
+        reviewCount: selectedRestaurant?.reviewCount || 0,
+        isOpen: selectedRestaurant?.isOpen || true,
+        openHours: selectedRestaurant?.openHours || '24 Hours',
+        specialties: selectedRestaurant?.specialties || ['Teh Ais', 'Nasi Kandar'],
         lastUpdated: new Date().toISOString(),
         lastUpdatedBy: user?.email || 'Unknown',
         lastUpdatedByLevel: 'newbie'
@@ -61,6 +72,8 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
         setRestaurantName('');
         setAddress('');
         setTehAisPrice('');
+        setSelectedRestaurant(null);
+        setShowGoogleSearch(true);
         setShowSuccess(false);
         onRestaurantAdded?.(newRestaurant);
         onClose();
@@ -109,8 +122,39 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
                   Your new mamak restaurant has been added to the map.
                 </p>
               </div>
+            ) : showGoogleSearch ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <Search className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Search for Restaurant
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Use Google Places to find and add a new mamak restaurant
+                  </p>
+                </div>
+                
+                <GooglePlacesSearch
+                  onRestaurantSelect={handleRestaurantSelect}
+                />
+              </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Selected Restaurant Info */}
+                {selectedRestaurant && (
+                  <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Selected Restaurant</span>
+                    </div>
+                    <p className="text-sm text-green-700 font-medium">{selectedRestaurant.name}</p>
+                    <p className="text-xs text-green-600">{selectedRestaurant.address}</p>
+                    {selectedRestaurant.rating > 0 && (
+                      <p className="text-xs text-green-600">⭐ {selectedRestaurant.rating} ({selectedRestaurant.reviewCount} reviews)</p>
+                    )}
+                  </div>
+                )}
+
                 {/* Restaurant Name */}
                 <div className="space-y-2">
                   <Label htmlFor="restaurantName" className="text-sm font-medium">
@@ -169,14 +213,24 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
                   </p>
                 </div>
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={!restaurantName.trim() || !address.trim() || !tehAisPrice.trim() || isSubmitting}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white"
-                >
-                  {isSubmitting ? 'Adding Restaurant...' : 'Add Restaurant'}
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowGoogleSearch(true)}
+                    className="flex-1"
+                  >
+                    Search Again
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={!restaurantName.trim() || !address.trim() || !tehAisPrice.trim() || isSubmitting}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    {isSubmitting ? 'Adding...' : 'Add Restaurant'}
+                  </Button>
+                </div>
               </form>
             )}
           </CardContent>
