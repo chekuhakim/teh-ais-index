@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { MamakRestaurant } from '@/types/restaurant';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronUp, ChevronDown, TrendingDown, TrendingUp, Coffee } from 'lucide-react';
+import { Coffee, ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react';
+import { MamakRestaurant } from '@/types/restaurant';
 
 interface PriceComparisonProps {
   restaurants: MamakRestaurant[];
@@ -12,13 +12,12 @@ interface PriceComparisonProps {
 
 export const PriceComparison: React.FC<PriceComparisonProps> = ({ restaurants, onCollapse }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  // Auto-collapse on mobile by default
   const [isMobile, setIsMobile] = useState(false);
-  
-  React.useEffect(() => {
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640); // sm breakpoint
+      setIsMobile(window.innerWidth < 640);
     };
     
     checkMobile();
@@ -35,7 +34,6 @@ export const PriceComparison: React.FC<PriceComparisonProps> = ({ restaurants, o
       }
     };
 
-    // Listen for map events
     const mapContainer = document.querySelector('.mapboxgl-map');
     if (mapContainer) {
       mapContainer.addEventListener('wheel', handleMapInteraction);
@@ -52,15 +50,18 @@ export const PriceComparison: React.FC<PriceComparisonProps> = ({ restaurants, o
     };
   }, [isMobile, isExpanded, onCollapse]);
 
-  const restaurantsWithPrices = restaurants
-    .filter(r => r.tehAisPrice !== null)
-    .sort((a, b) => (a.tehAisPrice || 0) - (b.tehAisPrice || 0));
-
-  const cheapest = restaurantsWithPrices[0];
-  const mostExpensive = restaurantsWithPrices[restaurantsWithPrices.length - 1];
+  const restaurantsWithPrices = restaurants.filter(r => r.tehAisPrice !== null);
   const averagePrice = restaurantsWithPrices.length > 0 
-    ? restaurantsWithPrices.reduce((sum, r) => sum + (r.tehAisPrice || 0), 0) / restaurantsWithPrices.length
+    ? restaurantsWithPrices.reduce((sum, r) => sum + (r.tehAisPrice || 0), 0) / restaurantsWithPrices.length 
     : 0;
+
+  const cheapest = restaurantsWithPrices.reduce((min, r) => 
+    !min || (r.tehAisPrice || 0) < (min.tehAisPrice || 0) ? r : min, null as MamakRestaurant | null
+  );
+
+  const mostExpensive = restaurantsWithPrices.reduce((max, r) => 
+    !max || (r.tehAisPrice || 0) > (max.tehAisPrice || 0) ? r : max, null as MamakRestaurant | null
+  );
 
   const getPriceColorClass = (price: number) => {
     if (price <= 1.80) return 'text-green-600';

@@ -6,7 +6,6 @@ import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
 import { useAuth } from '@/hooks/useAuth';
 import { getContributorDisplayName } from '@/lib/contributorUtils';
 import { RestaurantCard } from './RestaurantCard';
-import { PriceComparison } from './PriceComparison';
 
 // Mapbox access token - will be loaded from Netlify function
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiY2hla3VoYWtpbSIsImEiOiJjbWZldWl0ODMwYWYxMmxyMTBsNjRycTUxIn0.bVf63UP9C8XWJHFvFS5EEg';
@@ -19,9 +18,109 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const currentLocationMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState<MamakRestaurant | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const { restaurants, loading, error, usingFallback, updateRestaurantPrice } = useRestaurantsWithFallback();
   const { user, userProfile, incrementContribution } = useAuth();
+
+  // Get current location
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser');
+      return;
+    }
+
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ lat: latitude, lng: longitude });
+        
+        // Add current location marker to map
+        if (map.current) {
+          addCurrentLocationMarker(latitude, longitude);
+          
+          // Center map on current location
+          map.current.flyTo({
+            center: [longitude, latitude],
+            zoom: 13,
+            duration: 2000
+          });
+        }
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        setLocationError('Unable to get your location. Please check your browser permissions.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  };
+
+  // Add current location marker
+  const addCurrentLocationMarker = (lat: number, lng: number) => {
+    // Remove existing current location marker
+    if (currentLocationMarkerRef.current) {
+      currentLocationMarkerRef.current.remove();
+    }
+
+    // Create custom marker for current location
+    const markerElement = document.createElement('div');
+    markerElement.className = 'current-location-marker';
+    markerElement.style.cssText = `
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3b82f6;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      cursor: pointer;
+      position: relative;
+    `;
+
+    // Add pulsing animation
+    const pulseElement = document.createElement('div');
+    pulseElement.style.cssText = `
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.3);
+      animation: pulse 2s infinite;
+    `;
+    markerElement.appendChild(pulseElement);
+
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0% { transform: scale(0.8); opacity: 1; }
+        70% { transform: scale(1.2); opacity: 0.7; }
+        100% { transform: scale(1.4); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Create marker
+    const marker = new mapboxgl.Marker({ element: markerElement })
+      .setLngLat([lng, lat])
+      .addTo(map.current!);
+
+    currentLocationMarkerRef.current = marker;
+
+    // Add click handler to show location info
+    markerElement.addEventListener('click', () => {
+      // You could show a popup or do something when current location is clicked
+      console.log('Current location clicked:', { lat, lng });
+    });
+  };
 
   // Auto-close restaurant modal on map interaction
   useEffect(() => {
@@ -91,6 +190,9 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
 
     return () => {
       markersRef.current.forEach(marker => marker.remove());
+      if (currentLocationMarkerRef.current) {
+        currentLocationMarkerRef.current.remove();
+      }
       map.current?.remove();
     };
   }, [restaurants]);
@@ -177,6 +279,52 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
       
+      {/* Current Location Button - Bottom Right */}
+      <div className="absolute bottom-4 right-4 z-20">
+        <button
+          onClick={getCurrentLocation}
+          className="bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
+          title="Show my current location"
+        >
+          <svg 
+            className="w-5 h-5" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" 
+            />
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Location Error Message - Positioned above the location button */}
+      {locationError && (
+        <div className="absolute bottom-16 right-4 z-20 max-w-xs">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium">Location Error</p>
+                <p className="text-xs mt-1">{locationError}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Overlay for Mapbox token message */}
       {MAPBOX_TOKEN === 'YOUR_MAPBOX_TOKEN_HERE' && (
         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
@@ -234,13 +382,6 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
         </div>
       )}
 
-      {/* Price Comparison Sidebar */}
-      <div className="absolute top-4 right-4 z-10">
-        <PriceComparison 
-          restaurants={restaurants} 
-          onCollapse={() => setSelectedRestaurant(null)}
-        />
-      </div>
 
       {/* Legend - Mobile Optimized */}
       <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto bg-card p-2 sm:p-4 rounded-lg shadow-card">
