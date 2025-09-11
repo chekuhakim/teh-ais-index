@@ -128,6 +128,17 @@ const Index = () => {
             Prices
           </button>
           
+          {/* Add Mamak Button */}
+          <button 
+            onClick={() => setShowAuth(true)}
+            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-sm text-sm font-medium whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Add Mamak
+          </button>
+          
           {/* Admin Panel Button - Only for admin users */}
           {isAdmin && (
             <button

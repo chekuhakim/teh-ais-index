@@ -280,7 +280,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       <div ref={mapContainer} className="absolute inset-0" />
       
       {/* Current Location Button - Bottom Right */}
-      <div className="absolute bottom-4 right-4 z-50">
+      <div className="absolute bottom-16 right-4 z-50">
         <button
           onClick={getCurrentLocation}
           className="bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-lg border-2 border-blue-500 transition-colors"
@@ -310,7 +310,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
 
       {/* Location Error Message - Positioned above the location button */}
       {locationError && (
-        <div className="absolute bottom-16 right-4 z-50 max-w-xs">
+        <div className="absolute bottom-28 right-4 z-50 max-w-xs">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg">
             <div className="flex items-start">
               <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -344,8 +344,24 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
 
       {/* Restaurant Card Overlay - Centered */}
       {selectedRestaurant && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="relative max-w-sm w-full">
+        <div 
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
+          onClick={() => setSelectedRestaurant(null)}
+        >
+          <div 
+            className="relative max-w-sm w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button for the modal overlay */}
+            <button
+              onClick={() => setSelectedRestaurant(null)}
+              className="absolute -top-2 -right-2 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
             <RestaurantCard 
               restaurant={selectedRestaurant} 
               onClose={() => setSelectedRestaurant(null)}
