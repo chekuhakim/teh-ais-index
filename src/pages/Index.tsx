@@ -144,15 +144,15 @@ const Index = () => {
         <div className="flex gap-2 px-4 mt-2 overflow-x-auto">
           <button className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
             <div className="w-2 h-2 bg-white rounded-full"></div>
-            RM 1.50-1.80
+            &lt; RM 2.50
           </button>
           <button className="flex items-center gap-2 bg-yellow-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
             <div className="w-2 h-2 bg-white rounded-full"></div>
-            RM 1.80-2.00
+            RM 2.50-3.50
           </button>
           <button className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
             <div className="w-2 h-2 bg-white rounded-full"></div>
-            RM 2.00+
+            &gt; RM 3.50
           </button>
         </div>
       </div>

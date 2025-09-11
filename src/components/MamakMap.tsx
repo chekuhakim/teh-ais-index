@@ -202,8 +202,8 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
     el.className = 'mamak-marker';
     
     const priceColor = restaurant.tehAisPrice 
-      ? restaurant.tehAisPrice <= 1.80 ? 'bg-green-500' 
-        : restaurant.tehAisPrice <= 2.00 ? 'bg-yellow-500' 
+      ? restaurant.tehAisPrice < 2.50 ? 'bg-green-500' 
+        : restaurant.tehAisPrice <= 3.50 ? 'bg-yellow-500' 
         : 'bg-red-500'
       : 'bg-gray-400';
     
@@ -383,52 +383,6 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       )}
 
 
-      {/* Legend - Mobile Optimized */}
-      <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto bg-card p-2 sm:p-4 rounded-lg shadow-card">
-        <h4 className="font-semibold mb-2 sm:mb-3 text-card-foreground text-sm sm:text-base">Price Legend</h4>
-        
-        {/* Mobile: Horizontal layout */}
-        <div className="sm:hidden">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-              <span className="truncate">≤ RM 1.80</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full flex-shrink-0"></div>
-              <span className="truncate">RM 1.81-2.00</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
-              <span className="truncate">&gt; RM 2.00</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-gray-400 rounded-full flex-shrink-0"></div>
-              <span className="truncate">No data</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Desktop: Vertical layout */}
-        <div className="hidden sm:block space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0"></div>
-            <span>≤ RM 1.80 (Cheap)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0"></div>
-            <span>RM 1.81-2.00 (Moderate)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
-            <span>&gt; RM 2.00 (Expensive)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gray-400 rounded-full flex-shrink-0"></div>
-            <span>No price data</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
