@@ -90,7 +90,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Coffee className="h-5 w-5 text-teh" />
-              <span className="font-medium">Teh Ais Price</span>
+              <span className="font-medium">Teh Ais Bungkus Ikat Tepi Price</span>
             </div>
             <div className="flex items-center gap-2">
               {restaurant.tehAisPrice ? (
@@ -170,7 +170,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
       {/* Fixed Update Price Section at Bottom */}
       <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
         <div className="space-y-3">
-          <h4 className="font-medium">Update Teh Ais Price</h4>
+          <h4 className="font-medium">Update Teh Ais Bungkus Ikat Tepi Price</h4>
           
           {!user ? (
             <Alert>
@@ -179,7 +179,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
                 <div className="space-y-2">
                   <p>Please log in to update restaurant prices and contribute to the community.</p>
                   <p className="text-xs text-muted-foreground">
-                    Help others find the best Teh Ais deals by sharing real prices!
+                    Help others find the best Teh Ais Bungkus Ikat Tepi deals by sharing real prices!
                   </p>
                   <Button 
                     variant="link" 

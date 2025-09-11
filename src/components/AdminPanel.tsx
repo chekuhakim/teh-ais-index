@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { populateFirebase } from '@/scripts/populateFirebase';
 import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
 import { AddRestaurantForm } from './AddRestaurantForm';
 import { FirebaseStatus } from './FirebaseStatus';
@@ -18,24 +17,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const { restaurants, fetchRestaurants, usingFallback } = useRestaurantsWithFallback();
 
-  const handlePopulateDatabase = async () => {
-    setIsLoading(true);
-    setMessage(null);
-    
-    try {
-      await populateFirebase();
-      setMessage({ type: 'success', text: 'Database populated successfully! Refresh to see the data.' });
-      // Refresh the restaurants data
-      await fetchRestaurants();
-    } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` 
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleRestaurantAdded = () => {
     setMessage({ type: 'success', text: 'Restaurant added successfully!' });
@@ -80,7 +61,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${usingFallback ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
                     <span className="text-sm">
-                      {usingFallback ? 'Using sample data (Firebase not configured)' : 'Connected to Firebase'}
+                      {usingFallback ? 'No data available (Firebase not configured)' : 'Connected to Firebase'}
                     </span>
                   </div>
                   {usingFallback && (
@@ -138,20 +119,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Database Management</h3>
                 <p className="text-sm text-muted-foreground">
-                  Manage your Firebase database and populate with sample data
+                  Manage your Firebase database and add restaurant data
                 </p>
               </div>
               
               <div className="space-y-2">
-                <Button 
-                  onClick={handlePopulateDatabase}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? 'Populating Database...' : 'Populate with Sample Data'}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  This will add 6 sample restaurants to your Firebase database
+                <p className="text-sm text-muted-foreground">
+                  Use the "Add Restaurant" form below to add your first restaurant data.
                 </p>
               </div>
               

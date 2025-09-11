@@ -285,7 +285,7 @@ class GooglePlacesService {
       
       // Add common mamak specialties if it's a restaurant
       if (types.includes('restaurant') || types.includes('food')) {
-        return ['Teh Ais', 'Roti Canai', 'Mee Goreng', ...specialties].slice(0, 5);
+        return ['Teh Ais Bungkus Ikat Tepi', 'Roti Canai', 'Mee Goreng', ...specialties].slice(0, 5);
       }
       
       return specialties.slice(0, 5);

@@ -87,7 +87,7 @@ export const AddRestaurantForm: React.FC<AddRestaurantFormProps> = ({
     setValue('openHours', restaurant.openHours);
     setValue('specialties', restaurant.specialties.join(', '));
     
-    // Note: Google Places doesn't provide specific Teh Ais prices
+    // Note: Google Places doesn't provide specific Teh Ais Bungkus Ikat Tepi prices
     // Leave tehAisPrice empty for user to fill in with actual price
     
     // Don't auto-submit - let user review and add price first
@@ -148,9 +148,9 @@ export const AddRestaurantForm: React.FC<AddRestaurantFormProps> = ({
         {watch('name') && (
           <Card className="mt-4">
             <CardHeader>
-              <CardTitle>Review & Add Teh Ais Price</CardTitle>
+              <CardTitle>Review & Add Teh Ais Bungkus Ikat Tepi Price</CardTitle>
               <CardDescription>
-                Please review the restaurant details and add the actual Teh Ais price
+                Please review the restaurant details and add the actual Teh Ais Bungkus Ikat Tepi price
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -184,7 +184,7 @@ export const AddRestaurantForm: React.FC<AddRestaurantFormProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tehAisPrice">Teh Ais Price (RM) *</Label>
+                  <Label htmlFor="tehAisPrice">Teh Ais Bungkus Ikat Tepi Price (RM) *</Label>
                   <Input
                     id="tehAisPrice"
                     type="number"
@@ -200,7 +200,7 @@ export const AddRestaurantForm: React.FC<AddRestaurantFormProps> = ({
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    Enter the actual price you paid for Teh Ais at this restaurant
+                    Enter the actual price you paid for Teh Ais Bungkus Ikat Tepi at this restaurant
                   </p>
                 </div>
 

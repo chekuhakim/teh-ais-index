@@ -74,7 +74,7 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
         reviewCount: selectedRestaurant?.reviewCount || 0,
         isOpen: selectedRestaurant?.isOpen || true,
         openHours: selectedRestaurant?.openHours || '24 Hours',
-        specialties: selectedRestaurant?.specialties || ['Teh Ais', 'Nasi Kandar'],
+        specialties: selectedRestaurant?.specialties || ['Teh Ais Bungkus Ikat Tepi', 'Nasi Kandar'],
         lastUpdated: new Date().toISOString(),
         lastUpdatedBy: user?.email || 'Unknown',
         lastUpdatedByLevel: 'newbie'
@@ -213,7 +213,7 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
                 {/* Teh Ais Price */}
                 <div className="space-y-2">
                   <Label htmlFor="tehAisPrice" className="text-sm font-medium">
-                    Teh Ais Price (RM) *
+                    Teh Ais Bungkus Ikat Tepi Price (RM) *
                   </Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
@@ -232,7 +232,7 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
                     />
                   </div>
                   <p className="text-xs text-gray-500">
-                    Enter the actual price you paid for Teh Ais at this restaurant
+                    Enter the actual price you paid for Teh Ais Bungkus Ikat Tepi at this restaurant
                   </p>
                 </div>
 

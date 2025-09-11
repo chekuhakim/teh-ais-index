@@ -84,29 +84,27 @@ const Index = () => {
         
         {/* Profile Button */}
         <div className="absolute top-4 right-4 z-50">
-              {user ? (
-                <button
-                  onClick={() => setShowUserProfile(true)}
-                  className="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 p-0.5"
-                >
-                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    {userProfile ? (
-                      <span className="text-sm">{getContributorInfo(userProfile.contributorLevel).emoji}</span>
-                    ) : (
-                      <User className="w-4 h-4 text-gray-600" />
-                    )}
-                  </div>
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowAuth(true)}
-                  className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-                >
+          {user ? (
+            <button
+              onClick={() => setShowUserProfile(true)}
+              className="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 p-0.5"
+            >
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                {userProfile ? (
+                  <span className="text-sm">{getContributorInfo(userProfile.contributorLevel).emoji}</span>
+                ) : (
                   <User className="w-4 h-4 text-gray-600" />
-                </button>
-              )}
-            </div>
-          </div>
+                )}
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowAuth(true)}
+              className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+            >
+              <User className="w-4 h-4 text-gray-600" />
+            </button>
+          )}
         </div>
         
         {/* Category Buttons */}
@@ -178,7 +176,7 @@ const Index = () => {
               🍜 Mamak AIS Price Tracker
             </h2>
             <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 leading-relaxed">
-              Discover and track Teh Ais prices at mamak restaurants across Malaysia.
+              Discover and track Teh Ais Bungkus Ikat Tepi prices at mamak restaurants across Malaysia.
             </p>
             <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
               <span className="flex-shrink-0 mt-0.5">💡</span>
@@ -258,7 +256,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Teh Ais Price Summary</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Teh Ais Bungkus Ikat Tepi Price Summary</h2>
               <button
                 onClick={() => setShowPrices(false)}
                 className="text-gray-400 hover:text-gray-600"

@@ -233,7 +233,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
           <h3 className="text-xl font-bold mb-2 text-primary">Loading Restaurants</h3>
           <p className="text-muted-foreground mb-4">Connecting to Firebase...</p>
           <div className="text-sm text-muted-foreground">
-            <p>If this takes too long, the app will use sample data.</p>
+            <p>If this takes too long, please check your internet connection.</p>
             <p className="mt-2">Check browser console for details.</p>
           </div>
         </div>
@@ -264,7 +264,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       {/* Fallback Data Notice */}
       {usingFallback && (
         <div className="absolute top-0 left-0 right-0 z-20 bg-yellow-500 text-yellow-900 px-4 py-2 text-center text-sm">
-          <strong>⚠️ Using Sample Data:</strong> Firebase not configured. 
+          <strong>⚠️ No Data Available:</strong> Firebase not configured. 
           <a 
             href="https://console.firebase.google.com/project/mamak-a7768" 
             target="_blank" 

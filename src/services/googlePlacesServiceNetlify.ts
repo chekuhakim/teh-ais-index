@@ -163,7 +163,7 @@ class GooglePlacesServiceNetlify {
     
     // Common mamak specialties
     const commonSpecialties = [
-      'Teh Ais', 'Roti Canai', 'Mee Goreng', 'Nasi Lemak', 
+      'Teh Ais Bungkus Ikat Tepi', 'Roti Canai', 'Mee Goreng', 'Nasi Lemak', 
       'Teh Tarik', 'Nasi Kandar', 'Roti Telur', 'Mamak'
     ];
 

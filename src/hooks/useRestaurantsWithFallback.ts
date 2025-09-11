@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RestaurantService } from '@/services/restaurantService';
 import { MamakRestaurant } from '@/types/restaurant';
-import { mockRestaurants } from '@/data/mockRestaurants';
 
 export const useRestaurantsWithFallback = () => {
   const [restaurants, setRestaurants] = useState<MamakRestaurant[]>([]);
@@ -30,18 +29,18 @@ export const useRestaurantsWithFallback = () => {
       console.log(`✅ Successfully fetched ${data.length} restaurants from Firebase in ${endTime - startTime}ms`);
       
       if (data.length === 0) {
-        console.log('⚠️ No restaurants found in Firebase, using mock data as fallback');
-        setRestaurants(mockRestaurants);
+        console.log('⚠️ No restaurants found in Firebase');
+        setRestaurants([]);
         setUsingFallback(true);
       } else {
         setRestaurants(data);
         setUsingFallback(false);
       }
     } catch (err) {
-      console.warn('❌ Firebase fetch failed, using mock data as fallback:', err);
-      setRestaurants(mockRestaurants);
+      console.warn('❌ Firebase fetch failed:', err);
+      setRestaurants([]);
       setUsingFallback(true);
-      setError(`Firebase unavailable: ${err instanceof Error ? err.message : 'Unknown error'}. Using sample data.`);
+      setError(`Firebase unavailable: ${err instanceof Error ? err.message : 'Unknown error'}. Please check your connection.`);
     } finally {
       setLoading(false);
     }
@@ -60,8 +59,8 @@ export const useRestaurantsWithFallback = () => {
     showEmail?: boolean
   ) => {
     if (usingFallback) {
-      console.warn('⚠️ Cannot update price: Using fallback data. Please set up Firebase first.');
-      return;
+      console.warn('⚠️ Cannot update price: Firebase not available. Please check your connection.');
+      throw new Error('Cannot update price: Firebase not available. Please check your connection.');
     }
 
     try {
@@ -87,8 +86,8 @@ export const useRestaurantsWithFallback = () => {
 
   const addRestaurant = useCallback(async (restaurant: Omit<MamakRestaurant, 'id'>) => {
     if (usingFallback) {
-      console.warn('⚠️ Cannot add restaurant: Using fallback data. Please set up Firebase first.');
-      throw new Error('Cannot add restaurant: Firebase not available. Please set up Firebase first.');
+      console.warn('⚠️ Cannot add restaurant: Firebase not available. Please check your connection.');
+      throw new Error('Cannot add restaurant: Firebase not available. Please check your connection.');
     }
 
     try {
@@ -104,15 +103,8 @@ export const useRestaurantsWithFallback = () => {
 
   const searchRestaurants = useCallback(async (searchTerm: string) => {
     if (usingFallback) {
-      // Simple client-side search for fallback data
-      const results = mockRestaurants.filter(restaurant => 
-        restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        restaurant.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        restaurant.specialties.some(specialty => 
-          specialty.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-      setRestaurants(results);
+      // No fallback data available
+      setRestaurants([]);
       return;
     }
 
@@ -130,13 +122,8 @@ export const useRestaurantsWithFallback = () => {
 
   const getRestaurantsByPriceRange = useCallback(async (minPrice: number, maxPrice: number) => {
     if (usingFallback) {
-      // Simple client-side filtering for fallback data
-      const results = mockRestaurants.filter(restaurant => 
-        restaurant.tehAisPrice !== null && 
-        restaurant.tehAisPrice >= minPrice && 
-        restaurant.tehAisPrice <= maxPrice
-      );
-      setRestaurants(results);
+      // No fallback data available
+      setRestaurants([]);
       return;
     }
 

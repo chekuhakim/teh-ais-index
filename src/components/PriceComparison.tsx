@@ -75,7 +75,7 @@ export const PriceComparison: React.FC<PriceComparisonProps> = ({ restaurants, o
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm sm:text-lg font-bold flex items-center gap-2">
             <Coffee className="h-4 w-4 sm:h-5 sm:w-5 text-teh" />
-            <span className="hidden sm:inline">Teh Ais Prices</span>
+            <span className="hidden sm:inline">Teh Ais Bungkus Ikat Tepi Prices</span>
             <span className="sm:hidden">Prices</span>
           </CardTitle>
           <Button

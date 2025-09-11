@@ -151,7 +151,7 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="newPrice" className="text-sm font-medium">
-                      New Teh Ais Price (RM) *
+                      New Teh Ais Bungkus Ikat Tepi Price (RM) *
                     </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
@@ -170,7 +170,7 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
                       />
                     </div>
                     <p className="text-xs text-gray-500">
-                      Enter the current price you paid for Teh Ais at this restaurant
+                      Enter the current price you paid for Teh Ais Bungkus Ikat Tepi at this restaurant
                     </p>
                   </div>
 

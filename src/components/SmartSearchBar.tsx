@@ -57,15 +57,8 @@ export const SmartSearchBar: React.FC<SmartSearchBarProps> = ({
       let results: MamakRestaurant[] = [];
       
       if (usingFallback) {
-        // Use mock data for fallback
-        const { mockRestaurants } = await import('@/data/mockRestaurants');
-        results = mockRestaurants.filter(restaurant => 
-          restaurant.name.toLowerCase().includes(term.toLowerCase()) ||
-          restaurant.address.toLowerCase().includes(term.toLowerCase()) ||
-          restaurant.specialties.some(specialty => 
-            specialty.toLowerCase().includes(term.toLowerCase())
-          )
-        );
+        // No fallback data available
+        results = [];
       } else {
         // Use Firebase search
         results = await RestaurantService.searchRestaurants(term);
