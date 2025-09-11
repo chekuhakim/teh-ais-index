@@ -7,8 +7,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { getContributorDisplayName } from '@/lib/contributorUtils';
 import { RestaurantCard } from './RestaurantCard';
 
-// Mapbox access token - will be loaded from Netlify function
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiY2hla3VoYWtpbSIsImEiOiJjbWZldWl0ODMwYWYxMmxyMTBsNjRycTUxIn0.bVf63UP9C8XWJHFvFS5EEg';
+// Mapbox access token - loaded from environment variables only
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+// Validate Mapbox token
+if (!MAPBOX_TOKEN) {
+  console.error('Missing required Mapbox token environment variable: VITE_MAPBOX_TOKEN');
+  throw new Error('Missing required Mapbox token environment variable: VITE_MAPBOX_TOKEN');
+}
 
 interface MamakMapProps {
   onLoginRequest?: () => void;

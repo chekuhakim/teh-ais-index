@@ -1,7 +1,13 @@
 import { Loader } from '@googlemaps/js-api-loader';
 
 // Google Places API configuration
-const GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_PLACES_API_KEY || '';
+const GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
+
+// Validate Google Places API key
+if (!GOOGLE_PLACES_API_KEY) {
+  console.error('Missing required Google Places API key environment variable: VITE_GOOGLE_PLACES_API_KEY');
+  throw new Error('Missing required Google Places API key environment variable: VITE_GOOGLE_PLACES_API_KEY');
+}
 
 export interface GooglePlaceResult {
   place_id: string;
