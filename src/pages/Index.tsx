@@ -30,7 +30,7 @@ const Index = () => {
   const adminPanelRef = useRef<HTMLDivElement>(null);
   const userProfileRef = useRef<HTMLDivElement>(null);
   const { user, userProfile, logout, loading, isAdmin, toggleEmailVisibility } = useAuth();
-  const { fetchRestaurants, getRestaurantsByPriceRange } = useRestaurantsWithFallback();
+  const { restaurants, fetchRestaurants, getRestaurantsByPriceRange } = useRestaurantsWithFallback();
 
   // Click outside to close modals and banners
   useEffect(() => {
@@ -282,34 +282,75 @@ const Index = () => {
             </div>
             
             <div className="p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-blue-600">RM 1.85</div>
-                  <div className="text-sm text-blue-600">Average Price</div>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-green-600">RM 0.40</div>
-                  <div className="text-sm text-green-600">Price Range</div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium text-gray-900">Top Restaurants</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <span className="font-medium">Restoran ABC</span>
-                    <span className="text-green-600 font-bold">RM 1.50</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <span className="font-medium">Mamak Corner</span>
-                    <span className="text-yellow-600 font-bold">RM 1.80</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <span className="font-medium">Nasi Kandar</span>
-                    <span className="text-red-600 font-bold">RM 2.20</span>
-                  </div>
-                </div>
-              </div>
+              {(() => {
+                // Calculate real data from restaurants
+                const restaurantsWithPrices = restaurants.filter(r => r.tehAisPrice !== null && r.tehAisPrice !== undefined);
+                const averagePrice = restaurantsWithPrices.length > 0 
+                  ? restaurantsWithPrices.reduce((sum, r) => sum + (r.tehAisPrice || 0), 0) / restaurantsWithPrices.length 
+                  : 0;
+                
+                const cheapest = restaurantsWithPrices.reduce((min, r) => 
+                  !min || (r.tehAisPrice || 0) < (min.tehAisPrice || 0) ? r : min, null as MamakRestaurant | null
+                );
+                
+                const mostExpensive = restaurantsWithPrices.reduce((max, r) => 
+                  !max || (r.tehAisPrice || 0) > (max.tehAisPrice || 0) ? r : max, null as MamakRestaurant | null
+                );
+                
+                const priceRange = mostExpensive && cheapest 
+                  ? (mostExpensive.tehAisPrice || 0) - (cheapest.tehAisPrice || 0)
+                  : 0;
+
+                const getPriceColorClass = (price: number) => {
+                  if (price < 2.50) return 'text-green-600';
+                  if (price <= 3.50) return 'text-yellow-600';
+                  return 'text-red-600';
+                };
+
+                return (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-blue-50 p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {restaurantsWithPrices.length > 0 ? `RM ${averagePrice.toFixed(2)}` : 'N/A'}
+                        </div>
+                        <div className="text-sm text-blue-600">Average Price</div>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {priceRange > 0 ? `RM ${priceRange.toFixed(2)}` : 'N/A'}
+                        </div>
+                        <div className="text-sm text-green-600">Price Range</div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-gray-900">
+                        {restaurantsWithPrices.length > 0 ? 'Restaurants' : 'No Price Data Available'}
+                      </h3>
+                      {restaurantsWithPrices.length > 0 ? (
+                        <div className="space-y-2">
+                          {restaurantsWithPrices
+                            .sort((a, b) => (a.tehAisPrice || 0) - (b.tehAisPrice || 0))
+                            .map((restaurant) => (
+                            <div key={restaurant.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                              <span className="font-medium truncate">{restaurant.name}</span>
+                              <span className={`font-bold ${getPriceColorClass(restaurant.tehAisPrice || 0)}`}>
+                                RM {(restaurant.tehAisPrice || 0).toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-gray-500">
+                          <p>No restaurants with price data found.</p>
+                          <p className="text-sm mt-1">Add restaurants and update their prices to see data here.</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
               
               <div className="text-center">
                 <button
