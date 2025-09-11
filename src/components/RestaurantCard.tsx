@@ -38,8 +38,8 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
   const getPriceStatus = (price: number | null) => {
     if (!price) return { label: 'No price', color: 'bg-gray-100 text-gray-600' };
-    if (price <= 1.80) return { label: 'Cheap', color: 'bg-green-100 text-green-800' };
-    if (price <= 2.00) return { label: 'Moderate', color: 'bg-yellow-100 text-yellow-800' };
+    if (price < 2.50) return { label: 'Cheap', color: 'bg-green-100 text-green-800' };
+    if (price <= 3.50) return { label: 'Moderate', color: 'bg-yellow-100 text-yellow-800' };
     return { label: 'Expensive', color: 'bg-red-100 text-red-800' };
   };
 
