@@ -64,8 +64,8 @@ export const PriceComparison: React.FC<PriceComparisonProps> = ({ restaurants, o
   );
 
   const getPriceColorClass = (price: number) => {
-    if (price <= 1.80) return 'text-green-600';
-    if (price <= 2.00) return 'text-yellow-600';
+    if (price < 2.50) return 'text-green-600';
+    if (price <= 3.50) return 'text-yellow-600';
     return 'text-red-600';
   };
 
