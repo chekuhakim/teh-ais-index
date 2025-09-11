@@ -3,6 +3,7 @@ import { MamakMap } from "@/components/MamakMap";
 import { AdminPanel } from "@/components/AdminPanel";
 import { AuthModal } from "@/components/AuthModal";
 import { UserProfile } from "@/components/UserProfile";
+import { AddMamakModal } from "@/components/AddMamakModal";
 import { Button } from "@/components/ui/button";
 import { Settings, User, LogOut, X, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +13,7 @@ const Index = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showAddMamak, setShowAddMamak] = useState(false);
   const [showPrices, setShowPrices] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showWelcomeLoggedIn, setShowWelcomeLoggedIn] = useState(true);
@@ -130,7 +132,7 @@ const Index = () => {
           
           {/* Add Mamak Button */}
           <button 
-            onClick={() => user ? setShowAdmin(true) : setShowAuth(true)}
+            onClick={() => user ? setShowAddMamak(true) : setShowAuth(true)}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-sm text-sm font-medium whitespace-nowrap"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -320,6 +322,16 @@ const Index = () => {
       <AuthModal 
         isOpen={showAuth} 
         onClose={() => setShowAuth(false)} 
+      />
+      
+      {/* Add Mamak Modal */}
+      <AddMamakModal
+        isOpen={showAddMamak}
+        onClose={() => setShowAddMamak(false)}
+        onRestaurantAdded={(restaurant) => {
+          console.log('New restaurant added:', restaurant);
+          // You can add logic here to update the map with the new restaurant
+        }}
       />
     </div>
   );
