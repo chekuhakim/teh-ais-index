@@ -23,6 +23,30 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
   const { restaurants, loading, error, usingFallback, updateRestaurantPrice } = useRestaurantsWithFallback();
   const { user, userProfile, incrementContribution } = useAuth();
 
+  // Auto-close restaurant modal on map interaction
+  useEffect(() => {
+    const handleMapInteraction = () => {
+      if (selectedRestaurant) {
+        setSelectedRestaurant(null);
+      }
+    };
+
+    const mapContainer = document.querySelector('.mapboxgl-map');
+    if (mapContainer) {
+      mapContainer.addEventListener('wheel', handleMapInteraction);
+      mapContainer.addEventListener('touchstart', handleMapInteraction);
+      mapContainer.addEventListener('mousedown', handleMapInteraction);
+    }
+
+    return () => {
+      if (mapContainer) {
+        mapContainer.removeEventListener('wheel', handleMapInteraction);
+        mapContainer.removeEventListener('touchstart', handleMapInteraction);
+        mapContainer.removeEventListener('mousedown', handleMapInteraction);
+      }
+    };
+  }, [selectedRestaurant]);
+
   useEffect(() => {
     if (!mapContainer.current) return;
 
@@ -212,27 +236,54 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
 
       {/* Price Comparison Sidebar */}
       <div className="absolute top-4 right-4 z-10">
-        <PriceComparison restaurants={restaurants} />
+        <PriceComparison 
+          restaurants={restaurants} 
+          onCollapse={() => setSelectedRestaurant(null)}
+        />
       </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-card p-4 rounded-lg shadow-card">
-        <h4 className="font-semibold mb-3 text-card-foreground">Price Legend</h4>
-        <div className="space-y-2 text-sm">
+      {/* Legend - Mobile Optimized */}
+      <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto bg-card p-2 sm:p-4 rounded-lg shadow-card">
+        <h4 className="font-semibold mb-2 sm:mb-3 text-card-foreground text-sm sm:text-base">Price Legend</h4>
+        
+        {/* Mobile: Horizontal layout */}
+        <div className="sm:hidden">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
+              <span className="truncate">≤ RM 1.80</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full flex-shrink-0"></div>
+              <span className="truncate">RM 1.81-2.00</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
+              <span className="truncate">&gt; RM 2.00</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-gray-400 rounded-full flex-shrink-0"></div>
+              <span className="truncate">No data</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Desktop: Vertical layout */}
+        <div className="hidden sm:block space-y-2 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0"></div>
             <span>≤ RM 1.80 (Cheap)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-            <span>RM 1.81 - 2.00 (Moderate)</span>
+            <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0"></div>
+            <span>RM 1.81-2.00 (Moderate)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+            <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
             <span>&gt; RM 2.00 (Expensive)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
+            <div className="w-4 h-4 bg-gray-400 rounded-full flex-shrink-0"></div>
             <span>No price data</span>
           </div>
         </div>
