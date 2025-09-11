@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { User, Settings, Eye, EyeOff } from 'lucide-react';
+import { User, Settings, Eye, EyeOff, LogOut } from 'lucide-react';
 import { UserProfile as UserProfileType, ContributorLevel } from '@/types/restaurant';
 import { getContributorInfo, getNextLevelInfo } from '@/lib/contributorUtils';
 
@@ -11,12 +11,14 @@ interface UserProfileProps {
   userProfile: UserProfileType;
   onToggleEmailVisibility: () => void;
   onClose: () => void;
+  onLogout: () => void;
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({
   userProfile,
   onToggleEmailVisibility,
-  onClose
+  onClose,
+  onLogout
 }) => {
   const currentLevel = getContributorInfo(userProfile.contributorLevel);
   const nextLevel = getNextLevelInfo(userProfile.contributorLevel);
@@ -131,6 +133,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         {/* Join Date */}
         <div className="text-xs text-gray-500 text-center pt-2 border-t">
           Joined {new Date(userProfile.joinedAt).toLocaleDateString()}
+        </div>
+
+        {/* Logout Button */}
+        <div className="pt-3">
+          <Button
+            onClick={onLogout}
+            variant="outline"
+            className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
         </div>
       </CardContent>
     </Card>

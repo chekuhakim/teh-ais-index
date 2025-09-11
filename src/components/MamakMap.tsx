@@ -283,11 +283,11 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       <div className="absolute bottom-4 right-4 z-20">
         <button
           onClick={getCurrentLocation}
-          className="bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
+          className="bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-lg border-2 border-blue-500 transition-colors"
           title="Show my current location"
         >
           <svg 
-            className="w-5 h-5" 
+            className="w-6 h-6 text-blue-600" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -295,13 +295,13 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
             <path 
               strokeLinecap="round" 
               strokeLinejoin="round" 
-              strokeWidth={2} 
+              strokeWidth={2.5} 
               d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" 
             />
             <path 
               strokeLinecap="round" 
               strokeLinejoin="round" 
-              strokeWidth={2} 
+              strokeWidth={2.5} 
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
             />
           </svg>
@@ -342,43 +342,45 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
         </div>
       )}
 
-      {/* Restaurant Card Overlay */}
+      {/* Restaurant Card Overlay - Centered */}
       {selectedRestaurant && (
-        <div className="absolute top-4 left-4 z-10">
-          <RestaurantCard 
-            restaurant={selectedRestaurant} 
-            onClose={() => setSelectedRestaurant(null)}
-            onUpdatePrice={async (price) => {
-              if (!user) {
-                alert('Please log in to update restaurant prices');
-                return;
-              }
-              try {
-                const contributorLevel = userProfile?.contributorLevel || 'newbie';
-                const showEmail = userProfile?.showEmail || false;
-                const displayName = getContributorDisplayName(contributorLevel, showEmail, user.email || undefined);
-                
-                await updateRestaurantPrice(
-                  selectedRestaurant.id, 
-                  price, 
-                  user.uid, 
-                  displayName,
-                  contributorLevel,
-                  showEmail
-                );
-                
-                // Increment user contribution count
-                if (userProfile) {
-                  await incrementContribution();
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-sm w-full">
+            <RestaurantCard 
+              restaurant={selectedRestaurant} 
+              onClose={() => setSelectedRestaurant(null)}
+              onUpdatePrice={async (price) => {
+                if (!user) {
+                  alert('Please log in to update restaurant prices');
+                  return;
                 }
-                
-                console.log(`Updated price for ${selectedRestaurant.name}: RM ${price}`);
-              } catch (error) {
-                console.error('Failed to update price:', error);
-              }
-            }}
-            onLoginRequest={onLoginRequest}
-          />
+                try {
+                  const contributorLevel = userProfile?.contributorLevel || 'newbie';
+                  const showEmail = userProfile?.showEmail || false;
+                  const displayName = getContributorDisplayName(contributorLevel, showEmail, user.email || undefined);
+                  
+                  await updateRestaurantPrice(
+                    selectedRestaurant.id, 
+                    price, 
+                    user.uid, 
+                    displayName,
+                    contributorLevel,
+                    showEmail
+                  );
+                  
+                  // Increment user contribution count
+                  if (userProfile) {
+                    await incrementContribution();
+                  }
+                  
+                  console.log(`Updated price for ${selectedRestaurant.name}: RM ${price}`);
+                } catch (error) {
+                  console.error('Failed to update price:', error);
+                }
+              }}
+              onLoginRequest={onLoginRequest}
+            />
+          </div>
         </div>
       )}
 

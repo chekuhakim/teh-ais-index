@@ -157,9 +157,9 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Welcome Banner - Positioned below buttons */}
+      {/* Welcome Banner - Positioned below price legend buttons */}
       {!user && showWelcome && (
-        <div className="absolute top-32 left-1/2 transform -translate-x-1/2 z-40 w-full max-w-sm sm:max-w-md px-4">
+        <div className="absolute top-40 left-1/2 transform -translate-x-1/2 z-40 w-full max-w-sm sm:max-w-md px-4">
           <div ref={welcomeRef} className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 relative">
             <Button
               onClick={() => setShowWelcome(false)}
@@ -189,9 +189,9 @@ const Index = () => {
         </div>
       )}
 
-      {/* Welcome Message for Logged-in Users - Positioned below buttons */}
+      {/* Welcome Message for Logged-in Users - Positioned below price legend buttons */}
       {user && showWelcomeLoggedIn && (
-        <div className="absolute top-32 left-1/2 transform -translate-x-1/2 z-40 w-full max-w-xs sm:max-w-md px-4">
+        <div className="absolute top-40 left-1/2 transform -translate-x-1/2 z-40 w-full max-w-xs sm:max-w-md px-4">
           <div ref={welcomeLoggedInRef} className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 relative">
             <Button
               onClick={() => setShowWelcomeLoggedIn(false)}
@@ -242,6 +242,7 @@ const Index = () => {
               userProfile={userProfile}
               onToggleEmailVisibility={toggleEmailVisibility}
               onClose={() => setShowUserProfile(false)}
+              onLogout={logout}
             />
           </div>
         </div>
