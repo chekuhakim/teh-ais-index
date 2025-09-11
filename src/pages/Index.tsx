@@ -30,7 +30,7 @@ const Index = () => {
   const adminPanelRef = useRef<HTMLDivElement>(null);
   const userProfileRef = useRef<HTMLDivElement>(null);
   const { user, userProfile, logout, loading, isAdmin, toggleEmailVisibility } = useAuth();
-  const { fetchRestaurants } = useRestaurantsWithFallback();
+  const { fetchRestaurants, getRestaurantsByPriceRange } = useRestaurantsWithFallback();
 
   // Click outside to close modals and banners
   useEffect(() => {
@@ -145,17 +145,33 @@ const Index = () => {
         
         {/* Price Legend Buttons */}
         <div className="flex gap-2 px-4 mt-2 overflow-x-auto">
-          <button className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
+          <button 
+            onClick={() => getRestaurantsByPriceRange(0, 2.49)}
+            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap transition-colors"
+          >
             <div className="w-2 h-2 bg-white rounded-full"></div>
             &lt; RM 2.50
           </button>
-          <button className="flex items-center gap-2 bg-yellow-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
+          <button 
+            onClick={() => getRestaurantsByPriceRange(2.50, 3.50)}
+            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap transition-colors"
+          >
             <div className="w-2 h-2 bg-white rounded-full"></div>
             RM 2.50-3.50
           </button>
-          <button className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap">
+          <button 
+            onClick={() => getRestaurantsByPriceRange(3.51, 999)}
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap transition-colors"
+          >
             <div className="w-2 h-2 bg-white rounded-full"></div>
             &gt; RM 3.50
+          </button>
+          <button 
+            onClick={() => fetchRestaurants()}
+            className="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded-full shadow-sm text-xs font-medium whitespace-nowrap transition-colors"
+          >
+            <div className="w-2 h-2 bg-white rounded-full"></div>
+            Show All
           </button>
         </div>
       </div>
