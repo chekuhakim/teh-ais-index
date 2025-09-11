@@ -1,3 +1,15 @@
+export type ContributorLevel = 'newbie' | 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName?: string;
+  contributorLevel: ContributorLevel;
+  contributionCount: number;
+  showEmail: boolean;
+  joinedAt: string;
+}
+
 export interface MamakRestaurant {
   id: string;
   name: string;
@@ -12,6 +24,9 @@ export interface MamakRestaurant {
   openHours: string;
   specialties: string[];
   lastUpdated?: string;
+  lastUpdatedBy?: string;
+  lastUpdatedByLevel?: ContributorLevel;
+  priceHistory?: PriceEntry[];
   reviewCount: number;
 }
 
@@ -20,4 +35,7 @@ export interface PriceEntry {
   price: number;
   timestamp: string;
   userId?: string;
+  username?: string;
+  contributorLevel?: ContributorLevel;
+  showEmail?: boolean;
 }

@@ -1,0 +1,36 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  port = 5173
+  publish = "dist"
+
+# Environment variables for Netlify Functions
+# These should be set in Netlify dashboard under Site settings > Environment variables
+# GOOGLE_PLACES_API_KEY=your-google-places-api-key
+# MAPBOX_TOKEN=your-mapbox-token
+# FIREBASE_API_KEY=your-firebase-api-key
+# FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+# FIREBASE_PROJECT_ID=your-project-id
+# FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+# FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+# FIREBASE_APP_ID=your-app-id
+# FIREBASE_MEASUREMENT_ID=your-measurement-id

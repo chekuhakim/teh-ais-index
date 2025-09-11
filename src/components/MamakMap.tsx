@@ -2,19 +2,26 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MamakRestaurant } from '@/types/restaurant';
-import { mockRestaurants } from '@/data/mockRestaurants';
+import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
+import { useAuth } from '@/hooks/useAuth';
+import { getContributorDisplayName } from '@/lib/contributorUtils';
 import { RestaurantCard } from './RestaurantCard';
 import { PriceComparison } from './PriceComparison';
 
-// Temporary mock token - user should add their own Mapbox token
-const MAPBOX_TOKEN = 'YOUR_MAPBOX_TOKEN_HERE';
+// Mapbox access token - will be loaded from Netlify function
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiY2hla3VoYWtpbSIsImEiOiJjbWZldWl0ODMwYWYxMmxyMTBsNjRycTUxIn0.bVf63UP9C8XWJHFvFS5EEg';
 
-export const MamakMap = () => {
+interface MamakMapProps {
+  onLoginRequest?: () => void;
+}
+
+export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<MamakRestaurant | null>(null);
-  const [restaurants] = useState<MamakRestaurant[]>(mockRestaurants);
+  const { restaurants, loading, error, usingFallback, updateRestaurantPrice } = useRestaurantsWithFallback();
+  const { user, userProfile, incrementContribution } = useAuth();
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -91,8 +98,58 @@ export const MamakMap = () => {
     return el;
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="relative w-full h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center">
+        <div className="bg-card p-8 rounded-lg shadow-card text-center max-w-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <h3 className="text-xl font-bold mb-2 text-primary">Loading Restaurants</h3>
+          <p className="text-muted-foreground mb-4">Connecting to Firebase...</p>
+          <div className="text-sm text-muted-foreground">
+            <p>If this takes too long, the app will use sample data.</p>
+            <p className="mt-2">Check browser console for details.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="relative w-full h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center">
+        <div className="bg-card p-8 rounded-lg shadow-card text-center max-w-md">
+          <h3 className="text-xl font-bold mb-4 text-destructive">Error Loading Data</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-background to-muted">
+      {/* Fallback Data Notice */}
+      {usingFallback && (
+        <div className="absolute top-0 left-0 right-0 z-20 bg-yellow-500 text-yellow-900 px-4 py-2 text-center text-sm">
+          <strong>⚠️ Using Sample Data:</strong> Firebase not configured. 
+          <a 
+            href="https://console.firebase.google.com/project/mamak-a7768" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="underline ml-1"
+          >
+            Set up Firebase
+          </a> to save data permanently.
+        </div>
+      )}
+      
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
       
@@ -119,10 +176,36 @@ export const MamakMap = () => {
           <RestaurantCard 
             restaurant={selectedRestaurant} 
             onClose={() => setSelectedRestaurant(null)}
-            onUpdatePrice={(price) => {
-              // Mock price update
-              console.log(`Updating price for ${selectedRestaurant.name}: RM ${price}`);
+            onUpdatePrice={async (price) => {
+              if (!user) {
+                alert('Please log in to update restaurant prices');
+                return;
+              }
+              try {
+                const contributorLevel = userProfile?.contributorLevel || 'newbie';
+                const showEmail = userProfile?.showEmail || false;
+                const displayName = getContributorDisplayName(contributorLevel, showEmail, user.email || undefined);
+                
+                await updateRestaurantPrice(
+                  selectedRestaurant.id, 
+                  price, 
+                  user.uid, 
+                  displayName,
+                  contributorLevel,
+                  showEmail
+                );
+                
+                // Increment user contribution count
+                if (userProfile) {
+                  await incrementContribution();
+                }
+                
+                console.log(`Updated price for ${selectedRestaurant.name}: RM ${price}`);
+              } catch (error) {
+                console.error('Failed to update price:', error);
+              }
             }}
+            onLoginRequest={onLoginRequest}
           />
         </div>
       )}
