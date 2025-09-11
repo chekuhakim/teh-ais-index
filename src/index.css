@@ -177,10 +177,9 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    /* Prevent page scrolling */
+    /* Prevent page scrolling but allow content to be visible */
     overflow: hidden;
     height: 100vh;
-    position: fixed;
     width: 100%;
   }
   
@@ -212,5 +211,17 @@ All colors MUST be HSL.
     height: 100vh;
     overflow: hidden;
     position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ensure top bar elements are always visible */
+  .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: transparent;
   }
 }

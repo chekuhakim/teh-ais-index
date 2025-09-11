@@ -48,11 +48,11 @@ const Index = () => {
   }, [showWelcome, showWelcomeLoggedIn, showAdmin, showUserProfile, showPrices]);
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="w-full h-screen relative overflow-hidden">
       <MamakMap onLoginRequest={() => setShowAuth(true)} />
       
       {/* Google Maps Style Top Bar */}
-      <div className="absolute top-0 left-0 right-0 z-50">
+      <div className="top-bar absolute top-0 left-0 right-0 z-50">
         {/* Search Bar */}
         <div className="bg-white mx-4 mt-4 rounded-lg shadow-lg">
           <div className="flex items-center px-4 py-3">
