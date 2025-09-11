@@ -10,7 +10,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Prevent page zoom to maintain map overlay positioning
+  // Prevent page zoom and scrolling to maintain map overlay positioning
   useEffect(() => {
     const preventZoom = (e: KeyboardEvent) => {
       // Prevent Ctrl/Cmd + Plus, Minus, 0, and scroll wheel zoom
@@ -28,14 +28,32 @@ const App = () => {
       }
     };
 
+    // Prevent touch scrolling on mobile
+    const preventTouchScroll = (e: TouchEvent) => {
+      // Allow touch events on map container but prevent page scroll
+      const target = e.target as HTMLElement;
+      if (!target.closest('.mapboxgl-map')) {
+        e.preventDefault();
+      }
+    };
+
+    // Prevent scroll events
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
     // Add event listeners
     document.addEventListener('keydown', preventZoom);
     document.addEventListener('wheel', preventWheelZoom, { passive: false });
+    document.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    document.addEventListener('scroll', preventScroll, { passive: false });
 
     // Cleanup
     return () => {
       document.removeEventListener('keydown', preventZoom);
       document.removeEventListener('wheel', preventWheelZoom);
+      document.removeEventListener('touchmove', preventTouchScroll);
+      document.removeEventListener('scroll', preventScroll);
     };
   }, []);
 

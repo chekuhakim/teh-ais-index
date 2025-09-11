@@ -177,6 +177,11 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Prevent page scrolling */
+    overflow: hidden;
+    height: 100vh;
+    position: fixed;
+    width: 100%;
   }
   
   /* Disable page zoom to prevent map overlay positioning issues */
@@ -188,6 +193,9 @@ All colors MUST be HSL.
     -ms-transform: scale(1);
     transform: scale(1);
     transform-origin: 0 0;
+    /* Prevent scrolling */
+    overflow: hidden;
+    height: 100vh;
   }
   
   /* Prevent zoom on mobile devices */
@@ -197,5 +205,12 @@ All colors MUST be HSL.
       -ms-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
+  }
+  
+  /* Ensure app container takes full height and prevents scrolling */
+  #root {
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
   }
 }

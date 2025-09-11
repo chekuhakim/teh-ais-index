@@ -280,7 +280,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
       <div ref={mapContainer} className="absolute inset-0" />
       
       {/* Current Location Button - Bottom Right */}
-      <div className="absolute bottom-4 right-4 z-20">
+      <div className="absolute bottom-4 right-4 z-50">
         <button
           onClick={getCurrentLocation}
           className="bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-lg border-2 border-blue-500 transition-colors"
@@ -310,7 +310,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
 
       {/* Location Error Message - Positioned above the location button */}
       {locationError && (
-        <div className="absolute bottom-16 right-4 z-20 max-w-xs">
+        <div className="absolute bottom-16 right-4 z-50 max-w-xs">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg">
             <div className="flex items-start">
               <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
