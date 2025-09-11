@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Settings, User, LogOut, X, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getContributorInfo } from "@/lib/contributorUtils";
+import { useRestaurantsWithFallback } from "@/hooks/useRestaurantsWithFallback";
 
 const Index = () => {
   const [showAdmin, setShowAdmin] = useState(false);
@@ -22,6 +23,7 @@ const Index = () => {
   const adminPanelRef = useRef<HTMLDivElement>(null);
   const userProfileRef = useRef<HTMLDivElement>(null);
   const { user, userProfile, logout, loading, isAdmin, toggleEmailVisibility } = useAuth();
+  const { fetchRestaurants } = useRestaurantsWithFallback();
 
   // Click outside to close modals and banners
   useEffect(() => {
@@ -328,9 +330,15 @@ const Index = () => {
       <AddMamakModal
         isOpen={showAddMamak}
         onClose={() => setShowAddMamak(false)}
-        onRestaurantAdded={(restaurant) => {
+        onRestaurantAdded={async (restaurant) => {
           console.log('New restaurant added:', restaurant);
-          // You can add logic here to update the map with the new restaurant
+          // Refresh the map data to show the new restaurant
+          try {
+            await fetchRestaurants();
+            console.log('✅ Map data refreshed with new restaurant');
+          } catch (error) {
+            console.error('❌ Failed to refresh map data:', error);
+          }
         }}
       />
     </div>

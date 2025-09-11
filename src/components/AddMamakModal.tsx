@@ -8,6 +8,7 @@ import { X, MapPin, Coffee, CheckCircle, Search } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { GooglePlacesSearch } from './GooglePlacesSearch';
 import { RestaurantFromGoogle } from '@/types/restaurant';
+import { RestaurantService } from '@/services/restaurantService';
 
 interface AddMamakModalProps {
   isOpen: boolean;
@@ -46,11 +47,8 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
     setIsSubmitting(true);
     
     try {
-      // Simulate API call - replace with actual restaurant creation logic
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newRestaurant = {
-        id: Date.now().toString(),
+      // Create restaurant data
+      const restaurantData = {
         name: restaurantName.trim(),
         address: address.trim(),
         tehAisPrice: parseFloat(tehAisPrice),
@@ -63,6 +61,14 @@ export const AddMamakModal: React.FC<AddMamakModalProps> = ({
         lastUpdated: new Date().toISOString(),
         lastUpdatedBy: user?.email || 'Unknown',
         lastUpdatedByLevel: 'newbie'
+      };
+
+      // Save to Firebase
+      const restaurantId = await RestaurantService.addRestaurant(restaurantData);
+      
+      const newRestaurant = {
+        id: restaurantId,
+        ...restaurantData
       };
 
       setShowSuccess(true);
