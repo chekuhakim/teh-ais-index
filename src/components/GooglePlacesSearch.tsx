@@ -303,7 +303,7 @@ export const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({
                   className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-base truncate pr-2">{restaurant.name}</h3>
+                    <h3 className="font-semibold text-base pr-2 break-words">{restaurant.name}</h3>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {restaurant.rating > 0 && (
                         <div className="flex items-center gap-1">
@@ -326,28 +326,13 @@ export const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({
                     <span className="line-clamp-2">{restaurant.address}</span>
                   </div>
                   
-                  <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
                     <Clock className="h-3 w-3" />
                     <span className="truncate">{restaurant.openHours}</span>
                     <Badge variant={restaurant.isOpen ? "default" : "secondary"} className="text-xs">
                       {restaurant.isOpen ? "Open" : "Closed"}
                     </Badge>
                   </div>
-                  
-                  {restaurant.specialties.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {restaurant.specialties.slice(0, 3).map((specialty, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      ))}
-                      {restaurant.specialties.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{restaurant.specialties.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
