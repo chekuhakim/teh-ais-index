@@ -19,6 +19,13 @@ export interface MamakRestaurant {
     lng: number;
   };
   tehAisPrice: number | null;
+  // Optional food prices
+  rotiCanaiPrice?: number | null;
+  meeGorengPrice?: number | null;
+  nasiLemakPrice?: number | null;
+  tehTarikPrice?: number | null;
+  nasiKandarPrice?: number | null;
+  rotiTelurPrice?: number | null;
   rating: number;
   isOpen: boolean;
   openHours: string;
