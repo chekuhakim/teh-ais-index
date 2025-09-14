@@ -99,12 +99,57 @@ export const useRestaurants = () => {
     }
   }, []);
 
+  const updateRestaurantPrices = useCallback(async (
+    restaurantId: string,
+    priceUpdates: {
+      tehAisPrice?: number | null;
+      rotiCanaiPrice?: number | null;
+      meeGorengPrice?: number | null;
+      nasiLemakPrice?: number | null;
+      tehTarikPrice?: number | null;
+      nasiKandarPrice?: number | null;
+      rotiTelurPrice?: number | null;
+    },
+    userId?: string,
+    username?: string,
+    contributorLevel?: string,
+    showEmail?: boolean
+  ) => {
+    try {
+      await RestaurantService.updateRestaurantPrices(
+        restaurantId, 
+        priceUpdates, 
+        userId, 
+        username, 
+        contributorLevel, 
+        showEmail
+      );
+      
+      // Update local state
+      setRestaurants(prev => prev.map(restaurant => 
+        restaurant.id === restaurantId 
+          ? { 
+              ...restaurant, 
+              ...priceUpdates,
+              lastUpdated: new Date().toISOString(),
+              lastUpdatedBy: username || 'Anonymous',
+              lastUpdatedByLevel: contributorLevel as any || 'newbie'
+            }
+          : restaurant
+      ));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update restaurant prices');
+      throw err;
+    }
+  }, []);
+
   return {
     restaurants,
     loading,
     error,
     fetchRestaurants,
     updateRestaurantPrice,
+    updateRestaurantPrices,
     addRestaurant,
     searchRestaurants,
     getRestaurantsByPriceRange

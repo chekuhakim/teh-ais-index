@@ -139,6 +139,55 @@ export const useRestaurantsWithFallback = () => {
     }
   }, [usingFallback]);
 
+  const updateRestaurantPrices = useCallback(async (
+    restaurantId: string,
+    priceUpdates: {
+      tehAisPrice?: number | null;
+      rotiCanaiPrice?: number | null;
+      meeGorengPrice?: number | null;
+      nasiLemakPrice?: number | null;
+      tehTarikPrice?: number | null;
+      nasiKandarPrice?: number | null;
+      rotiTelurPrice?: number | null;
+    },
+    userId?: string,
+    username?: string,
+    contributorLevel?: string,
+    showEmail?: boolean
+  ) => {
+    if (usingFallback) {
+      console.warn('⚠️ Cannot update prices: Firebase not available. Please check your connection.');
+      throw new Error('Cannot update prices: Firebase not available. Please check your connection.');
+    }
+
+    try {
+      await RestaurantService.updateRestaurantPrices(
+        restaurantId, 
+        priceUpdates, 
+        userId, 
+        username, 
+        contributorLevel, 
+        showEmail
+      );
+      
+      // Update local state
+      setRestaurants(prev => prev.map(restaurant => 
+        restaurant.id === restaurantId 
+          ? { 
+              ...restaurant, 
+              ...priceUpdates,
+              lastUpdated: new Date().toISOString(),
+              lastUpdatedBy: username || 'Anonymous',
+              lastUpdatedByLevel: contributorLevel as any || 'newbie'
+            }
+          : restaurant
+      ));
+    } catch (err) {
+      console.error('Failed to update restaurant prices:', err);
+      throw err;
+    }
+  }, [usingFallback]);
+
   return {
     restaurants,
     loading,
@@ -146,6 +195,7 @@ export const useRestaurantsWithFallback = () => {
     usingFallback,
     fetchRestaurants,
     updateRestaurantPrice,
+    updateRestaurantPrices,
     addRestaurant,
     searchRestaurants,
     getRestaurantsByPriceRange

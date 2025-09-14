@@ -5,7 +5,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
 import { AddRestaurantForm } from './AddRestaurantForm';
+import { UpdateRestaurantForm } from './UpdateRestaurantForm';
 import { FirebaseStatus } from './FirebaseStatus';
+import { MamakRestaurant } from '@/types/restaurant';
 
 interface AdminPanelProps {
   isAdmin: boolean;
@@ -15,12 +17,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const { restaurants, fetchRestaurants, usingFallback } = useRestaurantsWithFallback();
+  const [selectedRestaurant, setSelectedRestaurant] = useState<MamakRestaurant | null>(null);
+  const { restaurants, fetchRestaurants, usingFallback, updateRestaurantPrices } = useRestaurantsWithFallback();
 
 
   const handleRestaurantAdded = () => {
     setMessage({ type: 'success', text: 'Restaurant added successfully!' });
     fetchRestaurants();
+  };
+
+  const handleRestaurantUpdated = () => {
+    setMessage({ type: 'success', text: 'Restaurant updated successfully!' });
+    setSelectedRestaurant(null);
+    fetchRestaurants();
+  };
+
+  const handleUpdateRestaurant = async (restaurantId: string, updates: Partial<MamakRestaurant>) => {
+    try {
+      await updateRestaurantPrices(restaurantId, updates);
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
@@ -39,11 +56,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
         )}
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-4' : 'grid-cols-2'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-3'}`}>
             <TabsTrigger value="overview">
               {isAdmin ? 'Overview' : 'My Contributions'}
             </TabsTrigger>
             <TabsTrigger value="add">Add Restaurant</TabsTrigger>
+            <TabsTrigger value="update">Update Prices</TabsTrigger>
             {isAdmin && <TabsTrigger value="manage">Manage Data</TabsTrigger>}
             {isAdmin && <TabsTrigger value="firebase">Firebase</TabsTrigger>}
           </TabsList>
@@ -89,13 +107,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
                           <span className="font-medium">{restaurant.name}</span>
                           <p className="text-sm text-muted-foreground">{restaurant.address}</p>
                         </div>
-                        <div className="text-right">
-                          <span className="text-sm font-medium">
-                            {restaurant.tehAisPrice ? `RM ${restaurant.tehAisPrice}` : 'No price'}
-                          </span>
-                          <p className="text-xs text-muted-foreground">
-                            Rating: {restaurant.rating} ⭐
-                          </p>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <span className="text-sm font-medium">
+                              {restaurant.tehAisPrice ? `RM ${restaurant.tehAisPrice}` : 'No price'}
+                            </span>
+                            <p className="text-xs text-muted-foreground">
+                              Rating: {restaurant.rating} ⭐
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedRestaurant(restaurant);
+                              setActiveTab('update');
+                            }}
+                          >
+                            Update
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -111,6 +141,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isAdmin }) => {
             <AddRestaurantForm 
               onSuccess={handleRestaurantAdded}
             />
+          </TabsContent>
+          
+          <TabsContent value="update">
+            {selectedRestaurant ? (
+              <UpdateRestaurantForm
+                restaurant={selectedRestaurant}
+                onSuccess={handleRestaurantUpdated}
+                onCancel={() => setSelectedRestaurant(null)}
+                onUpdateRestaurant={handleUpdateRestaurant}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <h3 className="text-lg font-semibold mb-2">Select a Restaurant to Update</h3>
+                <p className="text-muted-foreground mb-4">
+                  Choose a restaurant from the Overview tab to update its prices
+                </p>
+                <Button 
+                  onClick={() => setActiveTab('overview')}
+                  variant="outline"
+                >
+                  Go to Overview
+                </Button>
+              </div>
+            )}
           </TabsContent>
           
           {isAdmin && (

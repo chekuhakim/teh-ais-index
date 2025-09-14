@@ -83,6 +83,54 @@ export class RestaurantService {
     }
   }
 
+  // Update restaurant with all food prices
+  static async updateRestaurantPrices(
+    restaurantId: string, 
+    priceUpdates: {
+      tehAisPrice?: number | null;
+      rotiCanaiPrice?: number | null;
+      meeGorengPrice?: number | null;
+      nasiLemakPrice?: number | null;
+      tehTarikPrice?: number | null;
+      nasiKandarPrice?: number | null;
+      rotiTelurPrice?: number | null;
+    },
+    userId?: string,
+    username?: string,
+    contributorLevel?: string,
+    showEmail?: boolean
+  ): Promise<void> {
+    try {
+      const now = Timestamp.now();
+      
+      // Update restaurant document with all prices
+      const restaurantRef = doc(db, RESTAURANTS_COLLECTION, restaurantId);
+      await updateDoc(restaurantRef, {
+        ...priceUpdates,
+        lastUpdated: now,
+        lastUpdatedBy: username || 'Anonymous',
+        lastUpdatedByLevel: contributorLevel || 'newbie',
+        updatedAt: now
+      });
+
+      // Add price entry to prices collection for tehAisPrice if it was updated
+      if (priceUpdates.tehAisPrice !== undefined && priceUpdates.tehAisPrice !== null) {
+        await addDoc(collection(db, PRICES_COLLECTION), {
+          restaurantId,
+          price: priceUpdates.tehAisPrice,
+          timestamp: now,
+          userId: userId || null,
+          username: username || 'Anonymous',
+          contributorLevel: contributorLevel || 'newbie',
+          showEmail: showEmail || false
+        } as Omit<PriceEntry, 'id'>);
+      }
+    } catch (error) {
+      console.error('Error updating restaurant prices:', error);
+      throw error;
+    }
+  }
+
   // Update restaurant price
   static async updateRestaurantPrice(
     restaurantId: string, 
