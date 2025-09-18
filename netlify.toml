@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist"
 
 [build.environment]
@@ -19,7 +19,7 @@
   directory = "netlify/functions"
 
 [dev]
-  command = "npm run dev"
+  command = "pnpm run dev"
   port = 5173
   publish = "dist"
 
