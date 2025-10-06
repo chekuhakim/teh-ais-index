@@ -32,6 +32,15 @@ const Index = () => {
   const { user, userProfile, logout, loading, isAdmin, toggleEmailVisibility } = useAuth();
   const { restaurants, fetchRestaurants, getRestaurantsByPriceRange } = useRestaurantsWithFallback();
 
+  // Debug modal states
+  console.log('Index render - Modal states:', { 
+    showAddMamak, 
+    showUpdatePrice, 
+    showAuth, 
+    selectedRestaurant: selectedRestaurant?.name,
+    selectedGoogleRestaurant: selectedGoogleRestaurant?.name 
+  });
+
   // Click outside to close modals and banners
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,7 +131,16 @@ const Index = () => {
           
           {/* Add Mamak Button - Visible to all, checks login on click */}
           <button 
-            onClick={() => user ? setShowAddMamak(true) : setShowAuth(true)}
+            onClick={() => {
+              console.log('Add Mamak button clicked, user:', user);
+              if (user) {
+                console.log('Opening AddMamakModal');
+                setShowAddMamak(true);
+              } else {
+                console.log('Opening AuthModal');
+                setShowAuth(true);
+              }
+            }}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-sm text-sm font-medium whitespace-nowrap"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

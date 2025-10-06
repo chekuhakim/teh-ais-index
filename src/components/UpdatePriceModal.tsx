@@ -59,18 +59,22 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('UpdatePriceModal: handleSubmit called');
     
     if (!restaurant || !newPrice.trim()) {
+      console.log('UpdatePriceModal: Validation failed - no restaurant or price');
       setError('Please enter a valid price');
       return;
     }
 
     const price = parseFloat(newPrice);
     if (isNaN(price) || price < 0) {
+      console.log('UpdatePriceModal: Validation failed - invalid price:', price);
       setError('Please enter a valid price (must be a positive number)');
       return;
     }
 
+    console.log('UpdatePriceModal: Starting submission process');
     setIsSubmitting(true);
     setError(null);
     console.log('Starting price update for:', restaurant.name, 'New price:', price);
@@ -135,7 +139,12 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
     }
   };
 
-  if (!isOpen || !restaurant) return null;
+  console.log('UpdatePriceModal render:', { isOpen, restaurant: restaurant?.name, showSuccess, showShareModal, isSubmitting });
+  
+  if (!isOpen || !restaurant) {
+    console.log('UpdatePriceModal: Not rendering - isOpen:', isOpen, 'restaurant:', restaurant?.name);
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">

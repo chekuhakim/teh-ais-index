@@ -6,6 +6,7 @@ import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
 import { useAuth } from '@/hooks/useAuth';
 import { getContributorDisplayName } from '@/lib/contributorUtils';
 import { RestaurantCard } from './RestaurantCard';
+import { UpdatePriceModal } from './UpdatePriceModal';
 
 // Mapbox access token - loaded from environment variables only
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -28,6 +29,7 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<MamakRestaurant | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [showUpdatePriceModal, setShowUpdatePriceModal] = useState(false);
   const { restaurants, loading, error, usingFallback, updateRestaurantPrice } = useRestaurantsWithFallback();
   const { user, userProfile, incrementContribution } = useAuth();
 
@@ -371,34 +373,13 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
             <RestaurantCard 
               restaurant={selectedRestaurant} 
               onClose={() => setSelectedRestaurant(null)}
-              onUpdatePrice={async (price) => {
+              onUpdatePrice={(price) => {
                 if (!user) {
                   alert('Please log in to update restaurant prices');
                   return;
                 }
-                try {
-                  const contributorLevel = userProfile?.contributorLevel || 'newbie';
-                  const showEmail = userProfile?.showEmail || false;
-                  const displayName = getContributorDisplayName(contributorLevel, showEmail, user.email || undefined);
-                  
-                  await updateRestaurantPrice(
-                    selectedRestaurant.id, 
-                    price, 
-                    user.uid, 
-                    displayName,
-                    contributorLevel,
-                    showEmail
-                  );
-                  
-                  // Increment user contribution count
-                  if (userProfile) {
-                    await incrementContribution();
-                  }
-                  
-                  console.log(`Updated price for ${selectedRestaurant.name}: RM ${price}`);
-                } catch (error) {
-                  console.error('Failed to update price:', error);
-                }
+                // Open the UpdatePriceModal instead of direct update
+                setShowUpdatePriceModal(true);
               }}
               onLoginRequest={onLoginRequest}
             />
@@ -406,6 +387,20 @@ export const MamakMap: React.FC<MamakMapProps> = ({ onLoginRequest }) => {
         </div>
       )}
 
+      {/* Update Price Modal */}
+      <UpdatePriceModal
+        isOpen={showUpdatePriceModal}
+        onClose={() => {
+          setShowUpdatePriceModal(false);
+        }}
+        restaurant={selectedRestaurant}
+        onPriceUpdated={(restaurant) => {
+          console.log('Price updated for:', restaurant.name);
+          // Close the restaurant card and refresh data
+          setSelectedRestaurant(null);
+        }}
+        enableSharing={true}
+      />
 
     </div>
   );

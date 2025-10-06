@@ -12,7 +12,7 @@ import { getContributorDisplayName, getContributorInfo } from '@/lib/contributor
 interface RestaurantCardProps {
   restaurant: MamakRestaurant;
   onClose: () => void;
-  onUpdatePrice: (price: number) => void;
+  onUpdatePrice: (price?: number) => void;
   onLoginRequest?: () => void;
 }
 
@@ -34,6 +34,10 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
       setPriceInput('');
       setTimeout(() => setIsUpdating(false), 1000);
     }
+  };
+
+  const handleOpenUpdateModal = () => {
+    onUpdatePrice(); // Call without price to open modal
   };
 
   const getPriceStatus = (price: number | null) => {
@@ -192,29 +196,13 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               </AlertDescription>
             </Alert>
           ) : (
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
-                  RM
-                </span>
-                <Input
-                  type="number"
-                  step="0.10"
-                  min="0"
-                  placeholder="2.50"
-                  value={priceInput}
-                  onChange={(e) => setPriceInput(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-              <Button 
-                onClick={handlePriceUpdate}
-                disabled={!priceInput || isUpdating}
-                className="bg-gradient-mamak hover:opacity-90 transition-opacity min-w-[80px]"
-              >
-                {isUpdating ? 'Updating...' : 'Update'}
-              </Button>
-            </div>
+            <Button 
+              onClick={handleOpenUpdateModal}
+              className="w-full bg-gradient-mamak hover:opacity-90 transition-opacity"
+            >
+              <Coffee className="h-4 w-4 mr-2" />
+              Update Price
+            </Button>
           )}
         </div>
       </div>
