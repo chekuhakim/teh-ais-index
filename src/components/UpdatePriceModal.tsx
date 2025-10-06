@@ -4,28 +4,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, MapPin, Coffee, CheckCircle, Edit3 } from 'lucide-react';
+import { X, MapPin, Coffee, CheckCircle, Edit3, Share2 } from 'lucide-react';
 import { MamakRestaurant } from '@/types/restaurant';
 import { useAuth } from '@/hooks/useAuth';
 import { useRestaurantsWithFallback } from '@/hooks/useRestaurantsWithFallback';
+import { SharePriceModal } from './SharePriceModal';
 
 interface UpdatePriceModalProps {
   isOpen: boolean;
   onClose: () => void;
   restaurant: MamakRestaurant | null;
   onPriceUpdated?: (restaurant: MamakRestaurant) => void;
+  enableSharing?: boolean;
 }
 
 export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
   isOpen,
   onClose,
   restaurant,
-  onPriceUpdated
+  onPriceUpdated,
+  enableSharing = true
 }) => {
   const [newPrice, setNewPrice] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [updatedPrice, setUpdatedPrice] = useState<number>(0);
   const { user, userProfile } = useAuth();
   const { updateRestaurantPrice } = useRestaurantsWithFallback();
 
@@ -35,8 +40,22 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
       setNewPrice(restaurant.tehAisPrice?.toString() || '');
       setError(null);
       setShowSuccess(false);
+      setShowShareModal(false);
+      setUpdatedPrice(0);
     }
   }, [restaurant]);
+
+  // Reset form when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setNewPrice('');
+      setError(null);
+      setShowSuccess(false);
+      setShowShareModal(false);
+      setUpdatedPrice(0);
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +73,7 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
 
     setIsSubmitting(true);
     setError(null);
+    console.log('Starting price update for:', restaurant.name, 'New price:', price);
     
     try {
       const contributorInfo = userProfile ? {
@@ -75,15 +95,37 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
         contributorInfo.showEmail
       );
 
+      setUpdatedPrice(price);
       setShowSuccess(true);
+      console.log('Price update successful, showing success screen');
       
-      // Reset form after success
-      setTimeout(() => {
-        setNewPrice('');
-        setShowSuccess(false);
-        onPriceUpdated?.(restaurant);
-        onClose();
-      }, 2000);
+      if (enableSharing) {
+        // Show share modal after success
+        setTimeout(() => {
+          console.log('Transitioning to share modal');
+          setShowSuccess(false);
+          setShowShareModal(true);
+        }, 2000);
+
+        // Fallback: auto-close after 10 seconds if sharing modal doesn't work
+        setTimeout(() => {
+          if (showShareModal) {
+            console.log('Auto-closing modal after timeout');
+            setShowShareModal(false);
+            setNewPrice('');
+            onPriceUpdated?.(restaurant);
+            onClose();
+          }
+        }, 10000);
+      } else {
+        // Skip sharing, close modal after success
+        setTimeout(() => {
+          setShowSuccess(false);
+          setNewPrice('');
+          onPriceUpdated?.(restaurant);
+          onClose();
+        }, 2000);
+      }
       
     } catch (error) {
       console.error('Error updating price:', error);
@@ -123,9 +165,35 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Price Updated Successfully!
                 </h3>
-                <p className="text-sm text-gray-600">
-                  The price for {restaurant.name} has been updated.
+                <p className="text-sm text-gray-600 mb-4">
+                  The price for {restaurant.name} has been updated to RM{updatedPrice}.
                 </p>
+                {enableSharing ? (
+                  <>
+                    <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
+                      <Share2 className="h-4 w-4" />
+                      <span>Preparing sharing options...</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowSuccess(false);
+                        setNewPrice('');
+                        onPriceUpdated?.(restaurant);
+                        onClose();
+                      }}
+                      className="mt-2"
+                    >
+                      Skip Sharing & Close
+                    </Button>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 text-sm text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Price updated successfully!</span>
+                  </div>
+                )}
               </div>
             ) : (
               <>
@@ -188,6 +256,22 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Share Price Modal */}
+      {restaurant && enableSharing && (
+        <SharePriceModal
+          isOpen={showShareModal}
+          onClose={() => {
+            setShowShareModal(false);
+            setNewPrice('');
+            onPriceUpdated?.(restaurant);
+            onClose();
+          }}
+          restaurant={restaurant}
+          newPrice={updatedPrice}
+          oldPrice={restaurant.tehAisPrice || undefined}
+        />
+      )}
     </div>
   );
 };

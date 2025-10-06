@@ -404,6 +404,7 @@ const Index = () => {
           // Refresh the map data
           fetchRestaurants();
         }}
+        enableSharing={true} // Set to false to disable sharing temporarily
       />
     </div>
   );
