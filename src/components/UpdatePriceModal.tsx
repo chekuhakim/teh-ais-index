@@ -147,9 +147,9 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-      <div className="w-full max-w-md">
-        <Card className="relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-2 sm:p-4">
+      <div className="w-full max-w-md max-h-[90vh] overflow-hidden">
+        <Card className="relative max-h-[90vh] flex flex-col">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -167,7 +167,7 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 overflow-y-auto flex-1">
             {showSuccess ? (
               <div className="text-center py-8">
                 <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -183,19 +183,29 @@ export const UpdatePriceModal: React.FC<UpdatePriceModalProps> = ({
                       <Share2 className="h-4 w-4" />
                       <span>Preparing sharing options...</span>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setShowSuccess(false);
-                        setNewPrice('');
-                        onPriceUpdated?.(restaurant);
-                        onClose();
-                      }}
-                      className="mt-2"
-                    >
-                      Skip Sharing & Close
-                    </Button>
+                <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowSuccess(false);
+                      setNewPrice('');
+                      onPriceUpdated?.(restaurant);
+                      onClose();
+                    }}
+                    className="flex-1"
+                  >
+                    Skip Sharing & Close
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onClose}
+                    className="flex-1 sm:hidden"
+                  >
+                    Close
+                  </Button>
+                </div>
                   </>
                 ) : (
                   <div className="flex items-center justify-center gap-2 text-sm text-green-600">

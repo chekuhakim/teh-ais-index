@@ -18,6 +18,7 @@ import {
 import { MamakRestaurant } from '@/types/restaurant';
 import { useToast } from '@/hooks/use-toast';
 import { SocialSharingService } from '@/services/socialSharingService';
+import { useSwipeToClose } from '@/hooks/useSwipeToClose';
 
 interface SharePriceModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const SharePriceModal: React.FC<SharePriceModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const swipeRef = useSwipeToClose({ onClose, enabled: true });
 
   if (!isOpen) return null;
 
@@ -131,12 +133,21 @@ export const SharePriceModal: React.FC<SharePriceModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-      <div className="w-full max-w-md">
-        <Card className="relative">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-2 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-modal-title"
+    >
+      <div className="w-full max-w-md max-h-[90vh] overflow-hidden">
+        <Card ref={swipeRef} className="relative max-h-[90vh] flex flex-col">
           <CardHeader className="pb-3">
+            {/* Swipe indicator for mobile */}
+            <div className="flex justify-center mb-2 sm:hidden">
+              <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
+            </div>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <CardTitle id="share-modal-title" className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <Share2 className="h-5 w-5 text-green-500" />
                 Share Price Update
               </CardTitle>
@@ -151,7 +162,7 @@ export const SharePriceModal: React.FC<SharePriceModalProps> = ({
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 overflow-y-auto flex-1">
             {/* Restaurant Info Card */}
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <div className="flex items-center gap-2 mb-3">
@@ -198,7 +209,7 @@ export const SharePriceModal: React.FC<SharePriceModalProps> = ({
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-gray-700">Share to:</h4>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* X (Twitter) */}
                 <Button
                   onClick={shareToX}
@@ -258,26 +269,36 @@ export const SharePriceModal: React.FC<SharePriceModalProps> = ({
               </Button>
             </div>
 
-            {/* Instagram Story Suggestions */}
+            {/* Instagram Story Suggestions - Collapsible on mobile */}
             <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
               <h4 className="text-sm font-medium text-purple-800 mb-2">📸 Instagram Story Ideas:</h4>
-              <div className="text-xs text-purple-700 space-y-1 max-h-24 overflow-y-auto">
-                {SocialSharingService.generateInstagramStorySuggestions(restaurant, newPrice).slice(0, 4).map((suggestion, index) => (
+              <div className="text-xs text-purple-700 space-y-1 max-h-20 sm:max-h-24 overflow-y-auto">
+                {SocialSharingService.generateInstagramStorySuggestions(restaurant, newPrice).slice(0, 3).map((suggestion, index) => (
                   <div key={index}>• {suggestion}</div>
                 ))}
               </div>
             </div>
 
-            {/* Tips */}
+            {/* Tips - More compact on mobile */}
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="text-sm font-medium text-blue-800 mb-2">💡 Sharing Tips:</h4>
+              <h4 className="text-sm font-medium text-blue-800 mb-2">💡 Tips:</h4>
               <ul className="text-xs text-blue-700 space-y-1">
-                <li>• Add photos of the restaurant or your teh ais</li>
-                <li>• Tag the restaurant location in your posts</li>
-                <li>• Use relevant hashtags for better reach</li>
-                <li>• Share your experience with the food quality</li>
-                <li>• Post during meal times for better engagement</li>
+                <li>• Add photos for better engagement</li>
+                <li>• Tag restaurant location</li>
+                <li>• Use relevant hashtags</li>
+                <li>• Share during meal times</li>
               </ul>
+            </div>
+
+            {/* Mobile-friendly close button */}
+            <div className="pt-2 border-t">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                className="w-full"
+              >
+                Done
+              </Button>
             </div>
           </CardContent>
         </Card>
